@@ -1,14 +1,17 @@
 import mongoengine as me
 from fastapi import FastAPI, HTTPException
-from mongoengine import Document, StringField, IntField
+from mongoengine import Document, StringField, IntField, DictField
 
 # Conectar a la base de datos MongoDB
-me.connect('Beneficios', host='localhost', port=27017)
+me.connect('Beneficios', host='127.0.0.1', port=27017)
 
 # Definir el modelo para la colección 'users'
-class User(Document):
+class Users(Document):
     user = StringField(required=True)  # Campo que quieres evaluar
+    password = StringField()
     email = StringField(required=True)
+    phone = IntField()
+    permisos = DictField()
 
 # Crear la aplicación FastAPI
 app = FastAPI()
@@ -16,13 +19,13 @@ app = FastAPI()
 # Endpoint para obtener todos los usuarios
 @app.get("/users")
 async def get_users():
-    users = User.objects()
+    users = Users.objects()
     return list(users)
 
 # Endpoint para obtener un usuario por nombre de usuario
 @app.get("/users/{user}")
 async def get_user(user: str):
-    user_obj = User.objects(user=user).first()
+    user_obj = Users.objects(user=user).first()
     print(user_obj)
     if not user_obj:
         print("no encontrado:")
